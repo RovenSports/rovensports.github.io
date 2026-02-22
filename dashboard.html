@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>RovenSports</title>
+<style>
+body{
+  margin:0;
+  background:#111;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
+.container{
+  padding:40px;
+}
+button{
+  padding:10px 20px;
+  background:red;
+  border:none;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🎬 Maç İçerikleri</h1>
+  <p>Galatasaray vs Fenerbahçe 90dk</p>
+  <p>Özet</p>
+  <p>Klipler</p>
+  <br>
+  <button onclick="logout()">Çıkış Yap</button>
+</div>
+
+<script>
+function decodeJwt(token){
+  const base64 = token.split('.')[1];
+  return JSON.parse(atob(base64));
+}
+
+const token = localStorage.getItem("token");
+
+if(!token){
+  window.location.href = "index.html";
+}
+
+const data = decodeJwt(token);
+const now = Math.floor(Date.now()/1000);
+
+if(data.exp && now > data.exp){
+  localStorage.removeItem("token");
+  window.location.href = "index.html";
+}
+
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
