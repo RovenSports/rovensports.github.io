@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roven Admin</title>
+<style>
+body{
+  background:#0f2027;
+  color:white;
+  font-family:Arial;
+  padding:40px;
+}
+.container{
+  max-width:600px;
+  margin:auto;
+}
+select,input,button{
+  padding:10px;
+  margin:5px 0;
+  width:100%;
+  border-radius:8px;
+  border:none;
+}
+button{
+  background:#00c6ff;
+  font-weight:bold;
+  cursor:pointer;
+}
+.result{
+  margin-top:20px;
+  background:#111;
+  padding:15px;
+  border-radius:8px;
+  white-space:pre-wrap;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>🔐 Roven Key Üretici</h2>
+
+<label>Admin Token</label>
+<input type="password" id="adminToken" placeholder="ADMIN_TOKEN yaz">
+
+<label>Plan</label>
+<select id="plan">
+  <option value="7d">7 Günlük</option>
+  <option value="30d">30 Günlük</option>
+  <option value="life">Sınırsız</option>
+</select>
+
+<label>Kaç adet?</label>
+<input type="number" id="count" value="1" min="1" max="50">
+
+<button onclick="createKey()">Key Üret</button>
+
+<div class="result" id="result"></div>
+</div>
+
+<script>
+const WORKER_URL = "https://roven-api.rovensports.workers.dev";
+
+async function createKey(){
+  const token = document.getElementById("adminToken").value;
+  const plan = document.getElementById("plan").value;
+  const count = document.getElementById("count").value;
+  const resultBox = document.getElementById("result");
+
+  resultBox.innerText = "Üretiliyor...";
+
+  try{
+    const res = await fetch(WORKER_URL + "/api/admin/create", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body: JSON.stringify({ plan, count })
+    });
+
+    const data = await res.json();
+
+    if(!data.ok){
+      resultBox.innerText = "HATA: " + data.error;
+      return;
+    }
+
+    resultBox.innerText = "Üretilen Keyler:\n\n" + data.keys.join("\n");
+
+  }catch(e){
+    resultBox.innerText = "Bağlantı hatası.";
+  }
+}
+</script>
+
+</body>
+</html>
