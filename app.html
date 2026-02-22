@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>RovenSports • İçerikler</title>
+  <style>
+    body{margin:0;min-height:100vh;background:#0b1216;color:#fff;font-family:Arial}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 18px;border-bottom:1px solid #1c2a33}
+    .wrap{padding:18px;max-width:980px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+    .card{background:#0f1a20;border:1px solid #1c2a33;border-radius:14px;padding:14px}
+    .muted{opacity:.75}
+    button{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div style="font-weight:800">RovenSports</div>
+      <div class="muted" id="status">Kontrol ediliyor...</div>
+    </div>
+    <button id="logout">Çıkış</button>
+  </header>
+
+  <div class="wrap">
+    <h2>Maçlar</h2>
+    <p class="muted">Buraya sen içerik ekleyeceksin (başlık + linkler).</p>
+
+    <div class="grid" id="list">
+      <div class="card">
+        <div style="font-weight:800">Örnek: Galatasaray - Fenerbahçe</div>
+        <div class="muted" style="margin:8px 0 12px">90dk • Özet • Klipler</div>
+        <div>
+          <a href="#" style="color:#7dd3fc">90dk İzle</a> •
+          <a href="#" style="color:#a7f3d0">Özet</a> •
+          <a href="#" style="color:#fca5a5">Klipler</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const WORKER_URL = "https://SENIN-WORKER.adin.workers.dev"; // <-- aynı
+
+const token = localStorage.getItem("roven_token");
+if(!token) location.href = "index.html";
+
+document.getElementById("logout").onclick = () => {
+  localStorage.removeItem("roven_token");
+  location.href = "index.html";
+};
+
+(async () => {
+  const status = document.getElementById("status");
+  try{
+    const r = await fetch(`${WORKER_URL}/api/verify`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ token })
+    });
+    const j = await r.json();
+    if(!j.ok){
+      localStorage.removeItem("roven_token");
+      location.href = "index.html";
+      return;
+    }
+    status.textContent = j.expiresAt ? `Erişim bitiş: ${new Date(j.expiresAt*1000).toLocaleString("tr-TR")}` : "Sınırsız erişim";
+  }catch{
+    status.textContent = "Doğrulama hatası (internet).";
+  }
+})();
+</script>
+</body>
+</html>
