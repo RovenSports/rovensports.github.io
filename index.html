@@ -1,64 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RovenSports • Giriş</title>
-  <style>
-    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);font-family:Arial;color:#fff}
-    .card{width:min(520px,92vw);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
-      border-radius:16px;padding:22px;backdrop-filter:blur(10px)}
-    h1{margin:0 0 6px;font-size:28px}
-    p{margin:0 0 16px;opacity:.85}
-    input{width:100%;padding:14px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);
-      background:rgba(0,0,0,.25);color:#fff;font-size:16px;outline:none}
-    button{margin-top:12px;width:100%;padding:14px;border-radius:12px;border:none;
-      background:#fff;color:#111;font-weight:700;cursor:pointer}
-    .msg{margin-top:10px;font-size:14px;opacity:.9}
-  </style>
+<meta charset="UTF-8">
+<title>RovenSports Giriş</title>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  font-family:Arial;
+  color:white;
+}
+.box{
+  background:rgba(255,255,255,0.1);
+  padding:40px;
+  border-radius:12px;
+  backdrop-filter:blur(10px);
+  text-align:center;
+  width:300px;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:6px;
+}
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:6px;
+  background:#00c6ff;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:hover{
+  background:#0099cc;
+}
+.error{
+  margin-top:10px;
+  color:#ff4d4d;
+}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>RovenSports</h1>
-    <p>Giriş için erişim anahtarını gir.</p>
 
-    <input id="key" placeholder="Örn: 2A7F... (24 karakter)" autocomplete="off" />
-    <button id="btn">Giriş Yap</button>
-    <div class="msg" id="msg"></div>
-  </div>
+<div class="box">
+  <h2>🔐 RovenSports</h2>
+  <input type="text" id="keyInput" placeholder="Lisans Key">
+  <button onclick="login()">Giriş Yap</button>
+  <div class="error" id="error"></div>
+</div>
 
 <script>
-const WORKER_URL = "https://SENIN-WORKER.adin.workers.dev"; // <-- bunu değiştir
+const API_URL = "https://roven-api.rovensports.workers.dev";
 
-// Zaten token varsa direk app'e
-const existing = localStorage.getItem("roven_token");
-if (existing) location.href = "app.html";
+function decodeJwt(token){
+  const base64 = token.split('.')[1];
+  return JSON.parse(atob(base64));
+}
 
-document.getElementById("btn").onclick = async () => {
-  const key = document.getElementById("key").value.trim();
-  const msg = document.getElementById("msg");
-  msg.textContent = "Kontrol ediliyor...";
+function checkToken(){
+  const token = localStorage.getItem("token");
+  if(!token) return;
 
-  try{
-    const r = await fetch(`${WORKER_URL}/api/login`, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ key })
-    });
-    const j = await r.json();
+  const data = decodeJwt(token);
+  const now = Math.floor(Date.now()/1000);
 
-    if(!j.ok){
-      msg.textContent = j.error === "EXPIRED" ? "Key süresi bitmiş." : "Geçersiz key.";
-      return;
-    }
-
-    localStorage.setItem("roven_token", j.token);
-    location.href = "app.html";
-  }catch(e){
-    msg.textContent = "Bağlantı hatası. Tekrar dene.";
+  if(data.exp && now > data.exp){
+    localStorage.removeItem("token");
+    return;
   }
-};
+
+  window.location.href = "dashboard.html";
+}
+
+checkToken();
+
+async function login(){
+  const key = document.getElementById("keyInput").value.trim();
+  const errorDiv = document.getElementById("error");
+
+  errorDiv.innerText = "";
+
+  const res = await fetch(API_URL + "/api/login", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({ key })
+  });
+
+  const data = await res.json();
+
+  if(!data.ok){
+    errorDiv.innerText = "Geçersiz veya süresi dolmuş key.";
+    return;
+  }
+
+  localStorage.setItem("token", data.token);
+  window.location.href = "dashboard.html";
+}
 </script>
+
 </body>
 </html>
