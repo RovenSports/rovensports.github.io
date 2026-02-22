@@ -1,65 +1,189 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>RovenSports</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RovenSports • İçerikler</title>
 <style>
-body{
-  margin:0;
-  background:#111;
-  color:white;
-  font-family:Arial;
-  text-align:center;
-}
-.container{
-  padding:40px;
-}
-button{
-  padding:10px 20px;
-  background:red;
-  border:none;
-  border-radius:6px;
-  color:white;
-  cursor:pointer;
-}
+  :root{
+    --bg:#0b0f16;
+    --card:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.10);
+    --text:rgba(255,255,255,.92);
+    --muted:rgba(255,255,255,.65);
+    --accent:#00c6ff;
+    --danger:#ff4d4d;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    color:var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    background:
+      radial-gradient(1200px 700px at 15% 10%, rgba(0,198,255,.12), transparent 60%),
+      radial-gradient(900px 600px at 80% 20%, rgba(0,255,196,.10), transparent 60%),
+      linear-gradient(180deg, #070a10, #0b0f16);
+  }
+  .topbar{
+    position:sticky; top:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 18px;
+    background: rgba(0,0,0,.35);
+    border-bottom:1px solid var(--border);
+    backdrop-filter: blur(10px);
+  }
+  .brand{display:flex; gap:10px; align-items:center}
+  .logo{
+    width:40px; height:40px; border-radius:12px;
+    display:grid; place-items:center;
+    background: linear-gradient(135deg, rgba(0,198,255,.35), rgba(0,255,196,.22));
+    border:1px solid var(--border);
+    font-size:20px;
+  }
+  .title{font-weight:800}
+  .actions{display:flex; gap:10px; align-items:center}
+  .badge{
+    padding:10px 12px;
+    border:1px solid var(--border);
+    background: rgba(255,255,255,.05);
+    border-radius:999px;
+    color:var(--muted);
+    font-size:13px;
+    white-space:nowrap;
+  }
+  .btn{
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background: rgba(255,255,255,.06);
+    color: var(--text);
+    cursor:pointer;
+  }
+  .btn.danger{border-color: rgba(255,77,77,.35); color:#ffd1d1}
+  .wrap{padding:22px; max-width:1100px; margin:0 auto}
+  .grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px}
+  @media (max-width: 900px){ .grid{grid-template-columns: repeat(2, 1fr);} }
+  @media (max-width: 560px){ .grid{grid-template-columns: 1fr;} }
+  .card{
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:16px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.25);
+  }
+  .card h3{margin:0 0 8px; font-size:16px}
+  .meta{color:var(--muted); font-size:13px; line-height:1.4}
+  .linkrow{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap}
+  .link{
+    text-decoration:none;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background: rgba(0,0,0,.20);
+    color:var(--text);
+    font-size:13px;
+  }
 </style>
 </head>
 <body>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">🎬</div>
+      <div>
+        <div class="title">RovenSports</div>
+        <div style="color:var(--muted); font-size:12px;">İçerikler</div>
+      </div>
+    </div>
 
-<div class="container">
-  <h1>🎬 Maç İçerikleri</h1>
-  <p>Galatasaray vs Fenerbahçe 90dk</p>
-  <p>Özet</p>
-  <p>Klipler</p>
-  <br>
-  <button onclick="logout()">Çıkış Yap</button>
-</div>
+    <div class="actions">
+      <div class="badge" id="timeLeft">Kalan süre: —</div>
+      <button class="btn danger" onclick="logout()">Çıkış</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <h3>Galatasaray vs Fenerbahçe</h3>
+        <div class="meta">90 dk Full Maç • Özet • Klipler</div>
+        <div class="linkrow">
+          <a class="link" href="#" onclick="alert('Buraya video linki/oynatıcı gelecek')">▶ Full Maç</a>
+          <a class="link" href="#" onclick="alert('Buraya özet gelecek')">⚡ Özet</a>
+          <a class="link" href="#" onclick="alert('Buraya klipler gelecek')">🎞 Klipler</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Beşiktaş vs Trabzonspor</h3>
+        <div class="meta">Full Maç • Özet</div>
+        <div class="linkrow">
+          <a class="link" href="#" onclick="alert('Buraya içerik gelecek')">▶ İzle</a>
+          <a class="link" href="#" onclick="alert('Buraya içerik gelecek')">⚡ Özet</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Arşiv</h3>
+        <div class="meta">Eski maçlar burada listelenecek.</div>
+        <div class="linkrow">
+          <a class="link" href="#" onclick="alert('Listeleme sonra')">📁 Aç</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <script>
-function decodeJwt(token){
-  const base64 = token.split('.')[1];
-  return JSON.parse(atob(base64));
-}
+const API_URL = "https://roven-api.rovensports.workers.dev";
 
-const token = localStorage.getItem("token");
-
-if(!token){
-  window.location.href = "index.html";
-}
-
-const data = decodeJwt(token);
-const now = Math.floor(Date.now()/1000);
-
-if(data.exp && now > data.exp){
-  localStorage.removeItem("token");
-  window.location.href = "index.html";
+function secondsToText(sec){
+  if (sec == null) return "Sınırsız";
+  const s = Math.max(0, sec);
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  if (d > 0) return `${d}g ${h}s`;
+  if (h > 0) return `${h}s ${m}dk`;
+  return `${m}dk`;
 }
 
 function logout(){
   localStorage.removeItem("token");
   window.location.href = "index.html";
 }
-</script>
 
+async function boot(){
+  const token = localStorage.getItem("token");
+  if(!token) return logout();
+
+  // verify via backend (daha sağlam)
+  const res = await fetch(API_URL + "/api/verify", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ token })
+  });
+
+  const data = await res.json().catch(()=>null);
+
+  if(!data || !data.ok) return logout();
+
+  const now = Math.floor(Date.now()/1000);
+  const left = (data.exp == null) ? null : (data.exp - now);
+  document.getElementById("timeLeft").textContent = "Kalan süre: " + secondsToText(left);
+
+  // canlı sayaç
+  if (data.exp != null){
+    setInterval(()=>{
+      const left2 = data.exp - Math.floor(Date.now()/1000);
+      if (left2 <= 0) logout();
+      document.getElementById("timeLeft").textContent = "Kalan süre: " + secondsToText(left2);
+    }, 1000);
+  } else {
+    document.getElementById("timeLeft").textContent = "Kalan süre: Sınırsız";
+  }
+}
+
+boot();
+</script>
 </body>
 </html>
