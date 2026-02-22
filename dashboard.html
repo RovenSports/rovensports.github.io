@@ -136,16 +136,43 @@
 <script>
 const API_URL = "https://roven-api.rovensports.workers.dev";
 
-function secondsToText(sec){
-  if (sec == null) return "Sınırsız";
-  const s = Math.max(0, sec);
-  const d = Math.floor(s / 86400);
-  const h = Math.floor((s % 86400) / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  if (d > 0) return `${d}g ${h}s`;
-  if (h > 0) return `${h}s ${m}dk`;
-  return `${m}dk`;
-}
+// ===============================
+// MAÇ LİSTESİ BURADAN YÖNETİLECEK
+// ===============================
+
+const matches = [
+  {
+    title: "Galatasaray vs Fenerbahçe",
+    description: "90 dk Full Maç • Özet • Klipler",
+    links: {
+      full: "https://example.com/gsfb-full",
+      highlight: "https://example.com/gsfb-ozet",
+      clips: "https://example.com/gsfb-klip"
+    }
+  },
+  {
+    title: "Beşiktaş vs Trabzonspor",
+    description: "Full Maç • Özet",
+    links: {
+      full: "https://example.com/bjkts-full",
+      highlight: "https://example.com/bjkts-ozet",
+      clips: ""
+    }
+  },
+  {
+    title: "Real Madrid vs Barcelona",
+    description: "El Clasico Full Maç",
+    links: {
+      full: "https://example.com/rmb-full",
+      highlight: "",
+      clips: ""
+    }
+  }
+];
+
+// ===============================
+// TOKEN KONTROL
+// ===============================
 
 function logout(){
   localStorage.removeItem("token");
@@ -156,7 +183,6 @@ async function boot(){
   const token = localStorage.getItem("token");
   if(!token) return logout();
 
-  // verify via backend (daha sağlam)
   const res = await fetch(API_URL + "/api/verify", {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
@@ -164,26 +190,48 @@ async function boot(){
   });
 
   const data = await res.json().catch(()=>null);
-
   if(!data || !data.ok) return logout();
 
-  const now = Math.floor(Date.now()/1000);
-  const left = (data.exp == null) ? null : (data.exp - now);
-  document.getElementById("timeLeft").textContent = "Kalan süre: " + secondsToText(left);
-
-  // canlı sayaç
-  if (data.exp != null){
-    setInterval(()=>{
-      const left2 = data.exp - Math.floor(Date.now()/1000);
-      if (left2 <= 0) logout();
-      document.getElementById("timeLeft").textContent = "Kalan süre: " + secondsToText(left2);
-    }, 1000);
-  } else {
-    document.getElementById("timeLeft").textContent = "Kalan süre: Sınırsız";
-  }
+  renderMatches();
 }
 
 boot();
+
+// ===============================
+// MAÇLARI EKRANA BASMA
+// ===============================
+
+function renderMatches(){
+  const grid = document.querySelector(".grid");
+  grid.innerHTML = "";
+
+  matches.forEach(match => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    let buttons = "";
+
+    if(match.links.full){
+      buttons += `<a class="link" href="${match.links.full}" target="_blank">▶ Full Maç</a>`;
+    }
+
+    if(match.links.highlight){
+      buttons += `<a class="link" href="${match.links.highlight}" target="_blank">⚡ Özet</a>`;
+    }
+
+    if(match.links.clips){
+      buttons += `<a class="link" href="${match.links.clips}" target="_blank">🎞 Klipler</a>`;
+    }
+
+    card.innerHTML = `
+      <h3>${match.title}</h3>
+      <div class="meta">${match.description}</div>
+      <div class="linkrow">${buttons}</div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
 </script>
 </body>
 </html>
